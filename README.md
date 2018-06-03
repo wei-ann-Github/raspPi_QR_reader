@@ -6,7 +6,7 @@ This project is for turning the raspberry pi into QR code reader.
 
 ## Hardware Requirements:
 1. Raspberry pi model B+
-2 Raspberry pi cammera module
+2. Raspberry pi cammera module
 
 ## Software Requirements:
 1. Python 2.7
