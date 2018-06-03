@@ -10,8 +10,8 @@ This project is for turning the raspberry pi into QR code reader.
 
 ## Software Requirements:
 1. Python 2.7
-1 openCV installed on the pi
-1 The following python 2.7 libraries.
+1. openCV installed on the pi
+1. The following python 2.7 libraries.
 	* cv2 - the GUI for the scanner
 	* picamera - for capturing the QR code.
 	* zbar - for reading the QR code 
