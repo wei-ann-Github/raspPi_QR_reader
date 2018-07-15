@@ -1,0 +1,10 @@
+>>> from Tkinter import Tk
+>>> root = Tk()
+>>> root.geometry('200x50')
+''
+>>> root.geometry('200x100')
+''
+>>> root.geometry('400x100')
+''
+>>> h = root.winfo_screenheight()
+>>> w = root.winfo_screenwidth()

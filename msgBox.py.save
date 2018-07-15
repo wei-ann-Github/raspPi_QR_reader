@@ -1,0 +1,12 @@
+import tkinter
+import tkMessageBox
+
+root = tkinter.Tk()
+
+def message(name, msg):
+    """ Shows a message box with the message and an "OK" button. """
+    response = tkMessageBox.showinfo(name, msg)
+    
+    if response:
+	    return
+
