@@ -13,12 +13,12 @@ import imutils
 import pandas as pd
 import cv2
 
-from utils import find_qr
-
+# from utils import find_qr
+import zbar
+from beep import playBeep
 
 class Gui:
-    # def __init__(self, vs, found_msg=""):
-    def __init__(self, found_msg=""):
+    def __init__(self, vs, found_msg=""):
         self.root = Tk()
         self.root.wm_title("QR Code Scanner")
         self.root.attributes('-fullscreen', True)
@@ -28,15 +28,20 @@ class Gui:
         self.found_msg = found_msg
         
         # initialize camera or initialize VideoStream
-        self.camera = PiCamera()
-        self.camera_height = 1040
-        self.camera_width = 1280
-        self.camera.resolution = (self.camera_width, self.camera_height)
-        self.camera.framerate = 32
-        # self.vs = vs
-        # self.frame = None
+        # self.camera = PiCamera()
+        # self.camera_height = 1040
+        # self.camera_width = 1280
+        # self.camera.resolution = (self.camera_width, self.camera_height)
+        # self.camera.framerate = 32
+        self.vs = vs
+        self.frame = None
         self.thread = None  # to control the video polling loop
         self.stopEvent = None
+        self.scanner = zbar.ImageScanner()
+
+        # initialize the QR code scanner.
+        # import zbar
+        # self.scanner = zbar.ImageScanner()
         self.last_message = None
         
         # initialize other widgets
@@ -80,6 +85,7 @@ class Gui:
     def __stop_scan__(self):
         if self.start_button.cget('text') == "Stop Scanning":
             self.start_button.configure(text = "Start Scanning", command=self.__scan__)
+            # self.start_btn_text.set("Start Scanning")
             
         # Stop the camera.
         self.vs.stop()  # maybe this is correct.
@@ -89,35 +95,44 @@ class Gui:
         try:
             # keep looping over frames until we are instructed to stop
             while not self.stopEvent.is_set():
-                cap = PiRGBArray(self.camera, size=self.camera.resolution)
+                # grab the frame from the video stream and resize it to
+                # have a maximum width of 300 pixels
+                self.frame = self.vs.read()
                 # self.frame = imutils.resize(self.frame, width=width)
                 # self.frame = imutils.resize(self.frame, width=self.root.winfo_screenwidth())
-                for i in self.camera.capture_continuous(cap, format='bgr', use_video_port=True):
-                    i = i.array
-                    frame = imutils.resize(i, height=self.image_panel_height)
-                    # OpenCV represents images in BGR order; however PIL
-                    # represents images in RGB order, so we need to swap
-                    # the channels, then convert to PIL and ImageTk format
-                    data = find_qr(frame)
-                    if data is not None:
-                        print("QR code says", data)
-                    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Perform the swap
-                    image = Image.fromarray(image)  # W X H
-                    image = ImageTk.PhotoImage(image)
+                self.frame = imutils.resize(self.frame, height=self.image_panel_height)
+
+                # OpenCV represents images in BGR order; however PIL
+                # represents images in RGB order, so we need to swap
+                # the channels, then convert to PIL and ImageTk format
+                image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # Perform the swap
+                image = Image.fromarray(image)  # W X H
+                raw = image.tobytes()
+                width, height = image.size
+                raw = zbar.Image(width, height, 'Y800', raw)
+                # self.scanner.scan(raw)  # This is giving the problem...
+                """
+                for symbol in raw:
+                    # returns a beep sound.
+                    playBeep()
+                    # Match data with DB and mark attendance
+                    print("ymbol.data", symbol.data) """
+                # qr_image = image
+                # data = find_qr(image, *image.size)
+                # print(data)
+                image = ImageTk.PhotoImage(image)
+
+                # if the panel is not None, we need to initialize it
+                if self.panel is None:
+                    self.panel = Label(image=image)
+                    # self.panel.image = image
+                    self.panel.grid(row=0, column=0, columnspan=self.num_columns, sticky="EW")
+
+                # otherwise, simply update the panel
+                else:
+                    self.panel.configure(image=image)
+                    self.panel.image = image
                     
-                    cap.truncate(0)
-
-                    # if the panel is not None, we need to initialize it
-                    if self.panel is None:
-                        self.panel = Label(image=image)
-                        # self.panel.image = image
-                        self.panel.grid(row=0, column=0, columnspan=self.num_columns, sticky="EW")
-
-                    # otherwise, simply update the panel
-                    else:
-                        self.panel.configure(image=image)
-                        self.panel.image = image
-                        
                 # scan QR code here
                 # data = find_qr(qr_image, *qr_image.size)
                 

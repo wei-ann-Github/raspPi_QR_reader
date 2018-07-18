@@ -1,16 +1,14 @@
 import zbar
-import cv2
+
 from beep import playBeep
-from PIL import Image
 
 scanner = zbar.ImageScanner()
 
-def find_qr(frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY, dstCn=0) 
-    pil = Image.fromarray(gray)
-    width, height = pil.size
-    raw = pil.tobytes()
-    # Create a reader
+def find_qr(image, width, height):
+    # return None
+    print(height, width)
+    pass
+    raw = image.tobytes()
     image = zbar.Image(width, height, 'Y800', raw)
     scanner.scan(image)
     # Extract result
