@@ -9,11 +9,12 @@ from imutils.video import VideoStream
 
 # from PIL import ImageTk, Image
 
-vs = VideoStream(usePiCamera=1, resolution=(320, 360), framerate=4).start()  # original framerate=32
-time.sleep(2.0)
+# vs = VideoStream(usePiCamera=1, resolution=(320, 360), framerate=4).start()  # original framerate=32
+# time.sleep(2.0)
 
 msg = "Hi %s. You have successfully register for the event, and has earn points for %s!"
-scanner = Gui(vs, found_msg=msg)  # Create the root
+# scanner = Gui(vs, found_msg=msg)  # Create the root
+scanner = Gui(found_msg=msg)  # Create the root
 scanner.widgets()  # Initialize widget without display them
 scanner.grid_layout()  # Display the widgets
 scanner.main_loop()
