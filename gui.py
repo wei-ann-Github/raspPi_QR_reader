@@ -13,9 +13,9 @@ import imutils
 import pandas as pd
 import cv2
 
-# from utils import find_qr
-import zbar
-from beep import playBeep
+from utils import find_qr, find_name, show_warning, show_message
+# import zbar
+# from beep import playBeep
 
 class Gui:
     def __init__(self, vs, found_msg=""):
@@ -37,11 +37,8 @@ class Gui:
         self.frame = None
         self.thread = None  # to control the video polling loop
         self.stopEvent = None
-        self.scanner = zbar.ImageScanner()
 
         # initialize the QR code scanner.
-        # import zbar
-        # self.scanner = zbar.ImageScanner()
         self.last_message = None
         
         # initialize other widgets
@@ -53,7 +50,7 @@ class Gui:
         self.start_button = None  # button to start the scanning process
         self.start_btn_text = StringVar()
         self.exit = None  # The button to exit the programme.
-        self.register_df = None  # The dataframe containing information of the H&PS folks
+        self.rsvp_df = None  # The dataframe containing information of the H&PS folks
                               # who have expressed interest in attending the event.
         self.houselist_df = None  # The dataframe containing the house list of H&PS folks
         
@@ -71,16 +68,16 @@ class Gui:
         self.e.insert(0, self.filename)
         
         if self.filename.endswith('csv'):
-            self.register_df = pd.read_csv(self.filename)
+            self.rsvp_df = pd.read_csv(self.filename)
         elif self.filename.endswith('xlsx') or self.filename.endswith('xls'):
-            self.register_df = pd.read_excel(self.filename)
+            self.rsvp_df = pd.read_excel(self.filename)
 
-        self.register_df['attendance'] = None
+        self.rsvp_df['attendance'] = None
         
         try:
-            colname = self.register_df.columns
+            colname = self.rsvp_df.columns
         except:
-            print self.register_df
+            print self.rsvp_df
             
     def __stop_scan__(self):
         if self.start_button.cget('text') == "Stop Scanning":
@@ -89,7 +86,7 @@ class Gui:
             
         # Stop the camera.
         self.vs.stop()  # maybe this is correct.
-        self.stopEvent.set()
+        self.stopEvent = None
             
     def videoLoop(self):  # width is redundant
         try:
@@ -101,42 +98,32 @@ class Gui:
                 # self.frame = imutils.resize(self.frame, width=width)
                 # self.frame = imutils.resize(self.frame, width=self.root.winfo_screenwidth())
                 self.frame = imutils.resize(self.frame, height=self.image_panel_height)
-
                 # OpenCV represents images in BGR order; however PIL
                 # represents images in RGB order, so we need to swap
                 # the channels, then convert to PIL and ImageTk format
                 image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # Perform the swap
                 image = Image.fromarray(image)  # W X H
-                raw = image.tobytes()
-                width, height = image.size
-                raw = zbar.Image(width, height, 'Y800', raw)
-                # self.scanner.scan(raw)  # This is giving the problem...
-                """
-                for symbol in raw:
-                    # returns a beep sound.
-                    playBeep()
-                    # Match data with DB and mark attendance
-                    print("ymbol.data", symbol.data) """
-                # qr_image = image
-                # data = find_qr(image, *image.size)
-                # print(data)
                 image = ImageTk.PhotoImage(image)
-
+                
+                data = find_qr(self.frame, self.last_message)
+                # data = None
+                if data is not None:
+                    self.last_message = data
+                    if self.rsvp_df is not None:
+                        house, self.rsvp_df = find_name(self.rsvp_df, data, filename=self.filename, columname="EID")
+                        show_message(data, self.found_msg % (data, house))
+                    else:
+                        show_warning()
+                    
                 # if the panel is not None, we need to initialize it
                 if self.panel is None:
                     self.panel = Label(image=image)
                     # self.panel.image = image
                     self.panel.grid(row=0, column=0, columnspan=self.num_columns, sticky="EW")
-
                 # otherwise, simply update the panel
                 else:
                     self.panel.configure(image=image)
                     self.panel.image = image
-                    
-                # scan QR code here
-                # data = find_qr(qr_image, *qr_image.size)
-                
-
         except RuntimeError, e:
             print("[INFO] caught a RuntimeError")
             
@@ -187,7 +174,7 @@ class Gui:
     def onClose(self):
         # Write the data to frame
         if self.filename is not None:
-            self.register_df.to_csv(self.filename, index=False)
+            self.rsvp_df.to_csv(self.filename, index=False)
         # set the stop event, cleanup the camera, and allow the rest of
         # the quit process to continue
         if self.stopEvent is not None:

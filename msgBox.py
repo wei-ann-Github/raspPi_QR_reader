@@ -1,15 +1,17 @@
-import tkinter
+from Tkinter import *
 import tkMessageBox
 from time import sleep
 
-def message(name, msg):
+
+def show_message(name, msg):
     """ Shows a message box with the message and an "OK" button. """
-    response = None
-    response = tkMessageBox.showinfo(name, msg)
+    tkMessageBox.showinfo(name, msg)
 
-    if response:
-        return
-    else:
-        sleep(10)
-        return
 
+root = Tk()
+message = "hello world"
+name = "no name"
+b = Button(root, text="click me", command=lambda: show_message(name, message))
+b.pack()
+
+root.mainloop()
