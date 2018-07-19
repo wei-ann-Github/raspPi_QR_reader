@@ -111,7 +111,7 @@ class Gui:
                     self.last_message = data
                     if self.rsvp_df is not None:
                         house, self.rsvp_df = find_name(self.rsvp_df, data, filename=self.filename, columname="EID")
-                        show_message(data, self.found_msg % (data, house))
+                        show_message(data, self.found_msg % (data, house)[:1])
                     else:
                         show_warning()
                     
