@@ -10,7 +10,7 @@ import zbar
 from beep import playBeep
 
 camera = PiCamera()
-HEIGHT, WIDTH = 400, 400
+HEIGHT, WIDTH = 500, 400
 camera.resolution = (WIDTH, HEIGHT) # (width, height)
 camera.framerate = 32
 cap = PiRGBArray(camera, size=(WIDTH, HEIGHT))
@@ -29,6 +29,7 @@ for i in camera.capture_continuous(cap, format='bgr', use_video_port=True):
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY, dstCn=0)
 	pil = Image.fromarray(gray)
 	width, height = pil.size
+	print(type(pil), pil.size, height, width)
 	raw = pil.tobytes()
 	# Create a reader
 	image = zbar.Image(width, height, 'Y800', raw)
