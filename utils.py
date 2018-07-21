@@ -37,15 +37,15 @@ def find_name(df, data, filename=None, columname="EID"):
         loc = df.index.max() + 1
         df.loc[loc, columname] = data
         df.loc[loc, 'attendance'] = "Y"
-        df.loc[loc, 'house'] = ""
+        df.loc[loc, 'house'] = "-"
         # find house from the H&PS namelist
     if filename is not None:
         df.to_csv(filename, index=False, encoding='utf-8')
     return house, df
 
-def show_message(name, msg):
+def show_message(msg):
     """ Shows a message box with the message and an "OK" button. """
-    tkMessageBox.showinfo(name, msg)
+    tkMessageBox.showinfo('Welcome', msg)
 
 def show_warning():
     tkMessageBox.showwarning("WARNING", "The RSVP file has not been loaded yet!")

@@ -46,7 +46,7 @@ class Gui:
         self.panel = None  # Label widget for displaying the image.
         self.l = None  # Text instructions for the entry box to select file.
         self.e = None  # Where the path of the selected file will be shown
-        self.name_entry = None  # Users can enter their name here.
+        # self.name_entry self.name_entry= None  # Users can enter their name here.
         self.browse_button = None  # button to browse for the file where H&PS folks
                                    # have expressed interest in attending the event
         self.start_button = None  # button to start the scanning process
@@ -91,9 +91,11 @@ class Gui:
         self.stopEvent = None
         
         # reshow the grids hidden.
-        self.name_entry.grid_remove()
+        # self.name_entry.grid_remove()
+        self.e.unbind('<Return>')
         self.l.config(text="Select Attendance File")
-        self.e.grid()
+	self.browse_button.grid()
+        # self.e.grid()
             
     def videoLoop(self):  # width is redundant
         try:
@@ -111,17 +113,7 @@ class Gui:
                 image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)  # Perform the swap
                 image = Image.fromarray(image)  # W X H
                 image = ImageTk.PhotoImage(image)
-                
-                data = find_qr(self.frame, self.last_message)
-                # data = None
-                if data is not None:
-                    self.last_message = data
-                    if self.rsvp_df is not None:
-                        house, self.rsvp_df = find_name(self.rsvp_df, data, filename=self.filename, columname="name")
-                        show_message(data, self.found_msg % (data, house)[:1])
-                    else:
-                        show_warning()
-                    
+
                 # if the panel is not None, we need to initialize it
                 if self.panel is None:
                     self.panel = Label(image=image)
@@ -131,10 +123,26 @@ class Gui:
                 else:
                     self.panel.configure(image=image)
                     self.panel.image = image
+
+                name = find_qr(self.frame, self.last_message)
+
+                if name is not None:
+                    self.last_message = name
+                    if self.rsvp_df is not None:
+                        house, self.rsvp_df = find_name(self.rsvp_df, name, filename=self.filename, columname="name")
+                        name = ' '.join([item.upper() for item in name.split('.')[:-1]])
+                        show_message(self.found_msg % (name, house)[:1])
+                    else:
+                        show_warning()
+
         except RuntimeError, e:
             print("[INFO] caught a RuntimeError")
             
     def __scan__(self):
+        if self.rsvp_df is None:
+            show_warning()
+            return
+        self.e.delete(0, 'end')
         # Change the text in self.start_button to stop.
         if self.start_button.cget('text') == "Start Scanning":
             self.start_button.configure(text = "Stop Scanning", command=self.__stop_scan__)
@@ -149,17 +157,19 @@ class Gui:
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
         
         # Hide the interfaces not meant for the video stream window
-        self.e.grid_remove()
+        # self.e.grid_remove()
         self.start_button.grid_remove()
+	self.browse_button.grid_remove()
         self.l.config(text="Enter you name")
-        self.name_entry.grid()
-        self.name_entry.bind('<Return>', self.walkin)
+        # self.name_entry.grid()
+        # self.name_entry.bind('<Return>', self.walkin)
+        self.e.bind('<Return>', self.walkin)
             
     def widgets(self):
         self.panel = Label(image=None)
         self.l = Label(self.root, text="Select Attendance File")
         self.e = Entry(self.root)
-        self.name_entry = Entry(self.root)
+        # self.name_entry = Entry(self.root)
         self.browse_button = Button(self.root, text="Browse", command=self.__openFile__, width=self.button_width)
         self.start_button = Button(self.root, text="Start Scanning", command=self.__scan__, width=self.button_width)
         # self.start_button = Button(self.root, textvariable=self.start_btn_text, command=self.__scan__, width=self.button_width)
@@ -175,8 +185,8 @@ class Gui:
         datum += 1
         self.l.grid(row=datum, column=0, sticky="E")
         self.e.grid(row=datum, column=1, columnspan=2, sticky="EW")
-        self.name_entry.grid(row=datum, column=1, columnspan=2, sticky="EW")
-        self.name_entry.grid_remove()
+        # self.name_entry.grid(row=datum, column=1, columnspan=2, sticky="EW")
+        # self.name_entry.grid_remove()
         self.browse_button.grid(row=datum, column=3, sticky="W")
         self.root.update()
         widget_heights += max(self.l.winfo_height(), self.e.winfo_height(), self.browse_button.winfo_height())
@@ -202,11 +212,12 @@ class Gui:
         self.root.quit()
         
     def walkin(self, *args):
-        if self.name_entry.get().strip() != '':
-            name = self.name_entry.get().strip()
-            show_message(name, self.found_msg % name)
-            _, self.rsvp_df = find_name(self.rsvp_df, data, filename=self.filename, columname="name")
-        self.name_entry.delete(0, 'end')
+        if self.e.get().strip() != '':
+            name = self.e.get().split("@")[0].strip().lower()
+            _, self.rsvp_df = find_name(self.rsvp_df, name, filename=self.filename, columname="name")
+            name = ' '.join([item.upper() for item in name.split('.')[:-1]])
+            show_message(self.found_msg % name)
+        self.e.delete(0, 'end')
         
     def main_loop(self):
         self.root.mainloop()
