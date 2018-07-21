@@ -20,6 +20,7 @@ from utils import find_qr, find_name, show_warning, show_message
 class Gui:
     def __init__(self, vs, found_msg=""):
         self.root = Tk()
+        # self.root.bind('<Return>', self.walkin)
         self.root.wm_title("QR Code Scanner")
         self.root.attributes('-fullscreen', True)
         self.root.grid_columnconfigure(0, weight=1)
@@ -45,6 +46,7 @@ class Gui:
         self.panel = None  # Label widget for displaying the image.
         self.l = None  # Text instructions for the entry box to select file.
         self.e = None  # Where the path of the selected file will be shown
+        self.name_entry = None  # Users can enter their name here.
         self.browse_button = None  # button to browse for the file where H&PS folks
                                    # have expressed interest in attending the event
         self.start_button = None  # button to start the scanning process
@@ -87,6 +89,11 @@ class Gui:
         # Stop the camera.
         self.vs.stop()  # maybe this is correct.
         self.stopEvent = None
+        
+        # reshow the grids hidden.
+        self.name_entry.grid_remove()
+        self.l.config(text="Select Attendance File")
+        self.e.grid()
             
     def videoLoop(self):  # width is redundant
         try:
@@ -110,7 +117,7 @@ class Gui:
                 if data is not None:
                     self.last_message = data
                     if self.rsvp_df is not None:
-                        house, self.rsvp_df = find_name(self.rsvp_df, data, filename=self.filename, columname="EID")
+                        house, self.rsvp_df = find_name(self.rsvp_df, data, filename=self.filename, columname="name")
                         show_message(data, self.found_msg % (data, house)[:1])
                     else:
                         show_warning()
@@ -134,16 +141,25 @@ class Gui:
             self.start_btn_text.set("Stop Scanning")
             
         self.stopEvent = threading.Event()
+        print("self.stopEvent set")
         width = self.root.winfo_screenwidth()
         height = self.root.winfo_screenheight()
         self.thread = threading.Thread(target=self.videoLoop, args=())
         self.thread.start()
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
+        
+        # Hide the interfaces not meant for the video stream window
+        self.e.grid_remove()
+        self.start_button.grid_remove()
+        self.l.config(text="Enter you name")
+        self.name_entry.grid()
+        self.name_entry.bind('<Return>', self.walkin)
             
     def widgets(self):
         self.panel = Label(image=None)
         self.l = Label(self.root, text="Select Attendance File")
         self.e = Entry(self.root)
+        self.name_entry = Entry(self.root)
         self.browse_button = Button(self.root, text="Browse", command=self.__openFile__, width=self.button_width)
         self.start_button = Button(self.root, text="Start Scanning", command=self.__scan__, width=self.button_width)
         # self.start_button = Button(self.root, textvariable=self.start_btn_text, command=self.__scan__, width=self.button_width)
@@ -159,6 +175,8 @@ class Gui:
         datum += 1
         self.l.grid(row=datum, column=0, sticky="E")
         self.e.grid(row=datum, column=1, columnspan=2, sticky="EW")
+        self.name_entry.grid(row=datum, column=1, columnspan=2, sticky="EW")
+        self.name_entry.grid_remove()
         self.browse_button.grid(row=datum, column=3, sticky="W")
         self.root.update()
         widget_heights += max(self.l.winfo_height(), self.e.winfo_height(), self.browse_button.winfo_height())
@@ -182,6 +200,13 @@ class Gui:
             self.stopEvent.set()
             self.vs.stop()    
         self.root.quit()
+        
+    def walkin(self, *args):
+        if self.name_entry.get().strip() != '':
+            name = self.name_entry.get().strip()
+            show_message(name, self.found_msg % name)
+            _, self.rsvp_df = find_name(self.rsvp_df, data, filename=self.filename, columname="name")
+        self.name_entry.delete(0, 'end')
         
     def main_loop(self):
         self.root.mainloop()
