@@ -10,7 +10,9 @@ time.sleep(2.0)
 
 msg = '''Hi %s!
 Welcome to the <event>!'''
-scanner = Gui(vs, found_msg=msg)  # Create the root
+return_msg = '''Hi %s! 
+Welcome back again! '''
+scanner = Gui(vs, found_msg=msg, return_msg=return_msg)  # Create the root
 scanner.widgets()  # Initialize widget without display them
 scanner.grid_layout()  # Display the widgets
 scanner.main_loop()
