@@ -30,9 +30,6 @@ def find_name(df, data, filename=None, columname="EID"):
     house = "your"
     loc = df[df[columname]==data].index
     if loc.shape[0] > 0:  # if the name is in df
-        print df.loc[loc]
-        print df.loc[loc, 'attendance'].values
-        raw_input('press enter')
         if "Y" in df.loc[loc, 'attendance'].values:  # if attendance was already marked, flag is True
             flag = True
         else:  # Mark attendance if attendance not marked previously
@@ -47,15 +44,15 @@ def find_name(df, data, filename=None, columname="EID"):
         loc = df.index.max() + 1
         df.loc[loc, columname] = data
         df.loc[loc, 'attendance'] = "Y"
-        df.loc[loc, 'house'] = ""
+        df.loc[loc, 'house'] = "-"
         # find house from the H&PS namelist
     if filename is not None:
         df.to_csv(filename, index=False, encoding='utf-8')
     return house, df, flag
 
-def show_message(name, msg):
+def show_message(msg):
     """ Shows a message box with the message and an "OK" button. """
-    tkMessageBox.showinfo(name, msg)
+    tkMessageBox.showinfo('Welcome', msg)
 
 def show_warning():
     tkMessageBox.showwarning("WARNING", "The RSVP file has not been loaded yet!")

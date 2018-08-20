@@ -4,12 +4,8 @@ from gui import Gui
 
 from imutils.video import VideoStream
 
-# from Tkinter import *
-# import tkFileDialog
 
-# from PIL import ImageTk, Image
-
-vs = VideoStream(usePiCamera=1, resolution=(320, 360), framerate=4).start()  # original framerate=32
+vs = VideoStream(usePiCamera=1, resolution=(320, 360), framerate=32).start()  # original framerate=32
 time.sleep(2.0)
 
 msg = '''Hi %s!
