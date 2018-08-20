@@ -18,4 +18,3 @@ scanner = Gui(vs, found_msg=msg)  # Create the root
 scanner.widgets()  # Initialize widget without display them
 scanner.grid_layout()  # Display the widgets
 scanner.main_loop()
-    
