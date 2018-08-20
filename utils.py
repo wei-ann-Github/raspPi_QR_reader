@@ -28,17 +28,20 @@ def find_qr(frame, last_message):
 
 
 def find_name(df, data, filename=None, columname="EID"):
+    flag = False  # flag is an indicator whether the attendacnce was marked.
     house = "your"
     seen = 0
     loc = df[df[columname] == data].index
     if loc.shape[0] > 0:  # if the name is in df
-        # Check if attendance has been taken
-        if df.loc[loc, 'attendance'] == "Y":
-            seen = 1
-        else:
+        if "Y" in df.loc[loc, 'attendance'].values:  # if attendance was already marked, flag is True
+            flag = True
+        else:  # Mark attendance if attendance not marked previously
             df.loc[loc, 'attendance'] = "Y"
         # retrieve house name
-        house = "the " + df.loc[loc, "house"].values[0]
+        if isinstance(df.loc[loc, "house"].values[0], str):
+            house = "the " + df.loc[loc, "house"].values[0]
+        else:
+            house = ""
     else:  # else the name has not RSVP
         # add name into df
         loc = df.index.max() + 1
@@ -48,8 +51,8 @@ def find_name(df, data, filename=None, columname="EID"):
         # find house from the H&PS namelist
     if filename is not None:
         df.to_csv(filename, index=False, encoding='utf-8')
-    return house, df, seen
 
+    return house, df, flag
 
 def show_message(msg):
     """ Shows a message box with the message and an "OK" button. """
