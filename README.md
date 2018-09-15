@@ -1,6 +1,7 @@
 # raspPi QR Code Scanner
 
 **About**
+
 This is for building a general QR code scanner.
 
 There are currently to versions of the QR code scanner.
