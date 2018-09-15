@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+	<head>
+		<script type="text/javascript">
+			var ar = [1, 2, 3];
+			var ar2 = [];
+			
+			function log() {
+				console.log(ar.length, ar[1], ar[ar.length]);
+				if (ar[ar.length])
+					console.log('valid');
+				else
+					console.log('invalid');
+					ar[ar.length] = ar.length + 1;
+				console.log('after if else ' + ar);
+				ar2[2] = 2
+				ar2[10] = 2
+				console.log('ar2 ' + ar2)
+			}
+			
+			function currDatetime() {
+				now = Date().toLocaleString();
+				console.log(now);
+			}
+		</script>
+	</head>
+	<body onload="log();">
+	</body>
+</HTML>

@@ -4,7 +4,6 @@
     <title>Instascan</title>
     <script type="text/javascript" src="js/instascan.min.js"></script>
 	<script type="text/javascript" src="js/utils.js"></script>
-	
   </head>
   <body>
 	<!-- Header of the page -->
@@ -13,30 +12,14 @@
 	</div>
 	
 	<!-- Feed from the camera -->
-    <video id="preview" style="align:center"></video>
-    <script type="text/javascript">
-      let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-      scanner.addListener('scan', function (content) {
-	    alert("Hello " + content + "!");
-        console.log(content);
-      });
-      Instascan.Camera.getCameras().then(function (cameras) {
-        if (cameras.length > 0) {
-          scanner.start(cameras[0]);
-        } else {
-          console.error('No cameras found.');
-        }
-      }).catch(function (e) {
-        console.error(e);
-      });
-    </script>
+    <video id="preview" style="align:center">Load file and click Start.</video>
 	
-	<!--- For Uploading RSVP files --->
+	<!-- For Uploading RSVP files -->
 	<!--form action="myform.cgi" align="center"-->
 		<br>
-		<input type="file" name="fileUpload" value="fileUpload" id="fileUpload" align="center">
+		<input type="file" name="fileUpload" value="fileUpload" id="fileUpload" onchange="handleFiles(this.files)" accept=".csv">
 		<label for="fileUpload"> Select a file to upload</label>
-		<button onclick="sayHello();" id="startButton">Start</button>
+		<button onclick="startScan();" id="startButton">Start</button>
 	<!--/form-->
 
   </body>
