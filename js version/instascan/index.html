@@ -12,15 +12,43 @@
 	</div>
 	
 	<!-- Feed from the camera -->
-    <video id="preview" style="align:center">Load file and click Start.</video>
+    <video id="preview" style="align:center; display:none;">Load file and click Start.</video>
+	<div id="howToStart" style="display:block;">
+		<ol>
+			<li><a>Click on <strong>Browse</strong> and select the RSVP csv file.</a></li>
+			<li><a>Next, click on <strong>Start</strong> to start the webcam for scanning the QR Codes</a></li>
+		</ol>
+	</div>
 	
 	<!-- For Uploading RSVP files -->
 	<!--form action="myform.cgi" align="center"-->
 		<br>
 		<input type="file" name="fileUpload" value="fileUpload" id="fileUpload" onchange="handleFiles(this.files)" accept=".csv">
-		<label for="fileUpload"> Select a file to upload</label>
+		<label for="fileUpload" id="uploadInstructions"> Select a file to upload</label>
 		<button onclick="startScan();" id="startButton">Start</button>
 	<!--/form-->
+	
+	<!-- For showing the registrants count and the textbox for entering EID -->
+	<div style="display:none" id="howToScan">Scan your QR Code using the webcam or enter your EID below.</div>
+	<div id="textbox" style="display:none">
+		<ul style="list-style:none;">
+			<li><p>Scan your QR Code using the webcam or enter your EID below.</p></li>
+			<li style="display:inline" id="counter">0</li>
+			<li style="display:inline"><input type="text" id="enterSearchString"></li>
+			<li style="display:inline"><button onclick="findName()">Enter</button></li>
+		</ul>
+	</div>
+	
+	<script text="text/javascript">
+		document.getElementById("enterSearchString").value = ""
+		var enteredID = document.getElementById("enterSearchString");
+		enteredID.addEventListener("keydown", function (e) {
+			if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
+				validate(e);
+				findName();
+			}
+		});
+	</script>
 
   </body>
 </html>

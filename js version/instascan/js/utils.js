@@ -2,7 +2,7 @@
 var lines = [];  // Used in processData
 var idIndex;
 var timeIndex;
-var newLine;  // For walkins
+var newLine;  // For recording walkins
 
 /* For uploading CSV file */
 function Upload() {
@@ -96,8 +96,10 @@ function saveCSV() {
 function startScan() {
 	alert("Hello!");
 	// If there are no data in lines, bring alert message.
+	console.log("lines.length " + lines.length)
 	if (lines.length<=1) {
-		alert("File was either not uploaded, or it does not contain data.")
+		alert("No data was uploaded. Please upload another file.")
+		return
 	}
 	// The scanner starts
 	let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
@@ -114,8 +116,14 @@ function startScan() {
 	}).catch(function (e) {
 	console.error(e);
 	});
-	// The id='fileUpload' disappears.
-	// Another text box appears. This text box allows the user to type in this own EID.
+	// The id='fileUpload' and "howToStart" disappears. "Preview" Appears.
+	document.getElementById("fileUpload").style.display = "none";
+	document.getElementById("howToStart").style.display = "none";
+	document.getElementById("uploadInstructions").style.display = "none";
+	document.getElementById("startButton").style.display = "none";
+	document.getElementById("preview").style.display = "inline";
+	// "textbox" appears. This text box allows the user to type in this own EID.
+	document.getElementById("textbox").style.display = "inline";
 	// Word on the start button changes to stop.
 	return
 }
@@ -159,4 +167,19 @@ function welcomeMsg(searchString) {
 	alert('Welcome ' + searchString + '!')
 	for (i=1; i < lines.length; i++)
 		console.log(lines[i])
+}
+
+/* Functions for entering the EID manually */
+function findName() {
+	var searchString = document.getElementById("enterSearchString").value.trim().toLowerCase();
+	document.getElementById("enterSearchString").value = "";
+	// call function to search and record the information entered, and return a message.
+	// the function also increase the count of elementID "enterSearchString"
+	console.log("In findName(): " + searchString);
+}
+
+function validate(e) {
+    var text = e.target.value.trim().toLowerCase();
+    //validation of the input...
+	console.log(text + " isEntered.");
 }
