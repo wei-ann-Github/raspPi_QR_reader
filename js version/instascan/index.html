@@ -4,6 +4,36 @@
     <title>Instascan</title>
     <script type="text/javascript" src="js/instascan.min.js"></script>
 	<script type="text/javascript" src="js/utils.js"></script>
+	<script type="text/javascript">
+		var req = new XMLHttpRequest();
+		
+		function askServer(id) {
+			if (id == 'na')
+				id = document.getElementById('enterSearchString').value
+			if (id.length == 0)
+				return
+			var dataToSend = "?id=" + id;
+			console.log(dataToSend);
+			req.open("GET", "db.php" + dataToSend, true);
+			req.onreadystatechange = handleServerResponse;
+			req.send();
+			document.getElementById('result').innerHTML = "Request Sent.";
+		}
+		
+		function handleServerResponse() {
+			if((req.readyState == 4) && (req.status == 200)) {
+				var result = req.responseText;
+				console.log(result)
+				if (result == 2)
+					msg = "Welcome Back!"
+				else if (result == 1)
+					msg = "We are expecting you!"
+				else if (result == 0)
+					msg = "Thank you for joining our breakout session!"
+				document.getElementById('result').innerHTML = msg;
+			}
+		}
+	</script>
   </head>
   <body>
 	<!-- Header of the page -->
@@ -19,7 +49,7 @@
 	<div id="textbox">
 		<ul>
 			<li style="display:inline"><input type="text" id="enterSearchString"></li>
-			<li style="display:inline"><button onclick="askServer(getElementById('na').value)">Enter</button></li>
+			<li style="display:inline"><button onclick="askServer('na')">Enter</button></li>
 		</ul>
 	</div>
 	<div id="result"></div>
@@ -30,7 +60,7 @@
 		enteredID.addEventListener("keydown", function (e) {
 			if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
 				// validate(e);
-				askServer(enteredID);
+				askServer(enteredID.value);
 			}
 		});
 	</script>
