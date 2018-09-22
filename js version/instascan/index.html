@@ -4,6 +4,36 @@
     <title>Instascan</title>
     <script type="text/javascript" src="js/instascan.min.js"></script>
 	<script type="text/javascript" src="js/utils.js"></script>
+	<script type="text/javascript">
+		var req = new XMLHttpRequest();
+		
+		function askServer(id) {
+			if (id == 'na')
+				id = document.getElementById('enterSearchString').value
+			if (id.length == 0)
+				return
+			var dataToSend = "?id=" + id;
+			console.log(dataToSend);
+			req.open("GET", "db.php" + dataToSend, true);
+			req.onreadystatechange = handleServerResponse;
+			req.send();
+			document.getElementById('result').innerHTML = "Request Sent.";
+		}
+		
+		function handleServerResponse() {
+			if((req.readyState == 4) && (req.status == 200)) {
+				var result = req.responseText;
+				console.log(result)
+				if (result == 2)
+					msg = "Welcome Back!"
+				else if (result == 1)
+					msg = "We are expecting you!"
+				else if (result == 0)
+					msg = "Thank you for joining our breakout session!"
+				document.getElementById('result').innerHTML = msg;
+			}
+		}
+	</script>
   </head>
   <body>
 	<!-- Header of the page -->
@@ -12,40 +42,25 @@
 	</div>
 	
 	<!-- Feed from the camera -->
-    <video id="preview" style="align:center; display:none;">Load file and click Start.</video>
-	<div id="howToStart" style="display:block;">
-		<ol>
-			<li><a>Click on <strong>Browse</strong> and select the RSVP csv file.</a></li>
-			<li><a>Next, click on <strong>Start</strong> to start the webcam for scanning the QR Codes</a></li>
-		</ol>
-	</div>
+    <video id="preview" style="align:center;"></video>
 	
-	<!-- For Uploading RSVP files -->
-	<!--form action="myform.cgi" align="center"-->
-		<br>
-		<input type="file" name="fileUpload" value="fileUpload" id="fileUpload" onchange="handleFiles(this.files)" accept=".csv">
-		<label for="fileUpload" id="uploadInstructions"> Select a file to upload</label>
-		<button onclick="startScan();" id="startButton">Start</button>
-	<!--/form-->
-	
-	<!-- For showing the registrants count and the textbox for entering EID -->
-	<div style="display:none" id="howToScan">Scan your QR Code using the webcam or enter your EID below.</div>
-	<div id="textbox" style="display:none">
-		<ul style="list-style:none;">
-			<li><p>Scan your QR Code using the webcam or enter your EID below.</p></li>
-			<li style="display:inline" id="counter">0</li>
+	<!-- Textbox for entering EID -->
+	<div id="howToScan">Scan your QR Code using the webcam or enter your EID below.</div>
+	<div id="textbox">
+		<ul>
 			<li style="display:inline"><input type="text" id="enterSearchString"></li>
-			<li style="display:inline"><button onclick="findName()">Enter</button></li>
+			<li style="display:inline"><button onclick="askServer('na')">Enter</button></li>
 		</ul>
 	</div>
+	<div id="result"></div>
 	
 	<script text="text/javascript">
 		document.getElementById("enterSearchString").value = ""
 		var enteredID = document.getElementById("enterSearchString");
 		enteredID.addEventListener("keydown", function (e) {
 			if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
-				validate(e);
-				findName();
+				// validate(e);
+				askServer(enteredID.value);
 			}
 		});
 	</script>
