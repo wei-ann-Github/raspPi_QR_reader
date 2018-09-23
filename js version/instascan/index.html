@@ -3,7 +3,68 @@
   <head>
     <title>Instascan</title>
     <script type="text/javascript" src="js/instascan.min.js"></script>
+	<style type="text/css">
+		body { margin: 0; }
+		#shade, #modal { display: none; }
+		#shade { position: fixed; z-index: 100; top: 0; left: 0; width: 100%; height: 100%; }
+		#modal { position: fixed; z-index: 101; top: 33%; left: 25%; width: 50%; }
+		#shade { background: silver; opacity: 0.5; filter: alpha(opacity=50); }
+	</style>
+  </head>
+  <body>
+	<!-- Header of the page -->
+	<div>
+		<H1 style="align:center;">Banner Here</H1>
+	</div>
+	
+	<!-- Feed from the camera -->
+    <video id="preview" style="align:center;"></video>
+	
+	<!-- Textbox for entering EID -->
+	<div id="howToScan">Scan your QR Code using the webcam or enter your EID below.</div>
+	<div id="textbox">
+		<ul>
+			<li style="display:inline"><input type="text" id="enterSearchString"></li>
+			<li style="display:inline"><button onclick="askServer('na')" data-target="modal1" class="btn modal-trigger">Enter</button></li>
+		</ul>
+	</div>
+	<div id="result"></div>
+	
+	<!-- modal referenced from https://materializecss.com/modals.html#!   -->
+	<!-- and https://stackoverflow.com/questions/1992142/html-modal-popup -->
+	<div id="shade"></div>
+	<div id="modal" class="modal modal-fixed-footer">
+		<div class="modal-content">
+		  <h4>Welcome to Our Breakout Session.</h4>
+		  <p id="model-text">Hang on a moment... ...</p>
+		</div>
+		<button id="close">Close</button>
+	</div>
 	<script type="text/javascript" src="js/utils.js"></script>
+	<script text="text/javascript">
+		document.getElementById("enterSearchString").value = ""
+		var enteredID = document.getElementById("enterSearchString");
+		var modal= document.getElementById('modal');
+		var shade= document.getElementById('shade');
+			
+		enteredID.addEventListener("keydown", function (e) {
+			if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
+				// validate(e);
+				// modal.style.display=shade.style.display= 'block';
+				askServer(enteredID.value);
+				// open_modal();
+			}
+		});
+		
+		function open_modal() {
+			document.getElementById("modal-text").innerHTML = "Value";
+		}
+		
+		document.getElementById('close').onclick= function() {
+			modal.style.display=shade.style.display= 'none';
+		};
+	</script>
+	
 	<script type="text/javascript">
 		var req = new XMLHttpRequest();
 		
@@ -25,45 +86,17 @@
 				var result = req.responseText;
 				console.log(result)
 				if (result == 2)
+					//document.getElementById("modal-text").innerHTML = "Welcome Back!"
 					msg = "Welcome Back!"
 				else if (result == 1)
+					//document.getElementById("modal-text").innerHTML = "We are expecting you!"
 					msg = "We are expecting you!"
 				else if (result == 0)
+					//document.getElementById("modal-text").innerHTML = "Thank you for joining our breakout session!"
 					msg = "Thank you for joining our breakout session!"
 				document.getElementById('result').innerHTML = msg;
 			}
 		}
 	</script>
-  </head>
-  <body>
-	<!-- Header of the page -->
-	<div>
-		<H1 style="align:center;">Banner Here</H1>
-	</div>
-	
-	<!-- Feed from the camera -->
-    <video id="preview" style="align:center;"></video>
-	
-	<!-- Textbox for entering EID -->
-	<div id="howToScan">Scan your QR Code using the webcam or enter your EID below.</div>
-	<div id="textbox">
-		<ul>
-			<li style="display:inline"><input type="text" id="enterSearchString"></li>
-			<li style="display:inline"><button onclick="askServer('na')">Enter</button></li>
-		</ul>
-	</div>
-	<div id="result"></div>
-	
-	<script text="text/javascript">
-		document.getElementById("enterSearchString").value = ""
-		var enteredID = document.getElementById("enterSearchString");
-		enteredID.addEventListener("keydown", function (e) {
-			if (e.keyCode === 13) {  //checks whether the pressed key is "Enter"
-				// validate(e);
-				askServer(enteredID.value);
-			}
-		});
-	</script>
-
   </body>
 </html>
