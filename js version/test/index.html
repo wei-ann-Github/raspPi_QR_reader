@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC>
+	<head>
+		<title>Test Modal</title>
+		<link rel="stylesheet" type="text/css" href="myStyle.css">
+	</head>
+	<body>
+		<a href="#openModal" id="openModalButton">Open Modal</a>
+		<a href="#openModal" id="openModalButtonNoSee"></a>
+
+		<div id="openModal" class="modalDialog">
+			<div>
+				<!-- Reference From: https://www.webdesignerdepot.com/2012/10/creating-a-modal-window-with-html5-and-css3/ -->
+				<a href="#close" title="Close" class="close">X</a>
+				<h2>Modal Box</h2>
+				<p id="p1">This is a sample modal box that can be created using the powers of CSS3.</p>
+				<p id="p2">You could do a lot of things here like have a pop-up ad that shows when your website loads, or create a login/register form for users.</p>
+			</div>
+		</div>
+		<button onclick="changeText();">Click Me</button>
+		
+		<script type="text/javascript">
+			function changeText() {
+				document.getElementById('openModalButtonNoSee').click();
+				document.getElementById("p1").innerHTML = "hello World!"
+			}
+		</script>
+	</body>
+</HTML>
