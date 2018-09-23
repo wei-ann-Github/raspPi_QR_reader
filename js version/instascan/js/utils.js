@@ -22,7 +22,7 @@ function handleServerResponse() {
 			msg = "We are expecting you!"
 		else if (result == 0)
 			msg = "Thank you for joining our breakout session!"
-		document.getElementById('result').innerHTML = msg;
+		document.getElementById('result').value = msg
 	}
 }
 
@@ -43,4 +43,9 @@ function startScan() {
 		console.error(e);
 	});
 	return
+}
+
+/* Function for modal */
+function open_modal() {
+	document.getElementById("modal-text").innerHTML = "Please wait."
 }
