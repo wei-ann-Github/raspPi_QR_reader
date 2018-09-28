@@ -1,15 +1,8 @@
 <!DOCTYPE html PUBLIC>
 <html>
   <head>
-    <title>Instascan</title>
+    <title>Admin</title>
     <link rel="stylesheet" type="text/css" href="css/myStyle.css">
-    <script type="text/javascript" src="js/instascan.min.js"></script>
-    <script type="text/javascript">
-		function resize() {
-			var h = document.body.clientHeight;
-			document.getElementById('preview').height = h * 0.5;
-		}	
-    </script>
 	<style type="text/css">
 		body { margin: 0; }
 		#shade, #modal { display: none; }
@@ -18,22 +11,30 @@
 		#shade { background: silver; opacity: 0.5; filter: alpha(opacity=50); }
 	</style>
   </head>
-  <body onload="startScan(); resize();" onresize="resize();">
+  <body onload="askServer();">
 	<!-- Header of the page -->
 	<div>
-		<H1 style="align:center;">Banner Here</H1>
+		<H1 style="align:center;">Admin Page</H1>
 	</div>
 	
-	<!-- Feed from the camera -->
-    <video id="preview" style="align:center;"></video>
+	<!-- Manual Entry Section -->
+	<div>
+		<H2>EID Manual Entry</H2>
+		<!-- Textbox for entering EID -->
+		<div id="howToScan">Enter EID below.</div>
+		<div id="textbox">
+			<ul>
+				<li style="display:inline"><input type="text" id="enterSearchString" placeholder="john.doe"></li>
+				<!--li style="display:inline"><button onclick="register();" data-target="modal1" class="btn modal-trigger">Enter</button></li-->
+			</ul>
+		</div>
+	</div>
 	
-	<!-- Textbox for entering EID -->
-	<div id="howToScan">Scan your QR Code using the webcam or enter your EID below.</div>
-	<div id="textbox">
-		<ul>
-			<li style="display:inline"><input type="text" id="enterSearchString" placeholder="john.doe"></li>
-			<li style="display:inline"><button onclick="askServer('null');" data-target="modal1" class="btn modal-trigger">Enter</button></li>
-		</ul>
+	<!-- Report Section -->
+	<div>
+		<h2>Report</h2>
+		<p id="report">This is the reporting area.</p>
+		<button onclick="askServer();">Update</button>
 	</div>
 	
 	<!-- The modal -->
@@ -58,9 +59,9 @@
 		enteredID.addEventListener("keydown", function (e) {
 			if (e.keyCode === 13) {  //checks whether the pressed key is "Enter";
 				var inputValue = document.getElementById("enterSearchString").value
-				if (inputValue.length() > 0)
+				if (inputValue.length > 0)
 					openModal();
-				askServer(enteredID.value);
+					register();
 				document.getElementById("enterSearchString").value = ""
 			}
 		});
@@ -75,11 +76,10 @@
 			document.getElementById("p1").innerHTML = "Please Wait ..."
 		}
 		
-		/* Function for querying the db */
-		function askServer(id) {
-			if (id == "null")  // This is for getting the id when the Enter button is pressed.
-				id = document.getElementById('enterSearchString').value
-				if (id.length > 0)
+		/* Function for manual registration */
+		function register() {
+			id = document.getElementById('enterSearchString').value
+			if (id.length > 0)
 					openModal()
 			if (id.length == 0)
 				return
@@ -93,23 +93,40 @@
 		
 		function handleServerResponse() {
 			if((req.readyState == 4) && (req.status == 200)) {
-				var q_result = req.responseText;
-				result = JSON.parse(q_result)[0]
-				name = JSON.parse(q_result)[1]
-				if (name=="null")	
-					name = ""
-				else
-					name = " " + name
-				if (result == 2)
-					//document.getElementById("modal-text").innerHTML = "Welcome Back!"
-					msg = "Welcome Back!"
-				else if (result == 1)
-					//document.getElementById("modal-text").innerHTML = "We are expecting you!"
-					msg = "Hi" + name + "!"
-				else if (result == 0)
-					//document.getElementById("modal-text").innerHTML = "Thank you for joining our breakout session!"
-					msg = "Thank you for joining our breakout session!"
-				document.getElementById('p1').innerHTML = msg;
+				var qResult = req.responseText;
+				var flag = JSON.parse(qResult)[0]
+				var firstName = JSON.parse(qResult)[1]
+				switch(flag) {
+					case 2:
+						msg = firstName + " has already registered prior.";
+						break;
+					case 1:
+						msg = "Checked in";
+						break;
+					case 0:
+						msg = firstName + " is not in our guest list.";
+						break;
+				}
+				console.log(msg)
+				document.getElementById("p1").innerHTML = msg;
+			}
+		}
+		
+		/* Function for querying the db */
+		function askServer() {
+			req.open("GET", "db_report.php", true);
+			req.onreadystatechange = handleServerResponse2;
+			req.send();
+		}
+		
+		function handleServerResponse2() {
+			if((req.readyState == 4) && (req.status == 200)) {
+				var qResult = req.responseText;
+				var numDb = JSON.parse(qResult)[0]
+				var numActual = JSON.parse(qResult)[1]
+				msg = numActual + " checked-in out of " + numDb + " registered."
+				console.log(msg)
+				document.getElementById("report").innerHTML = msg;
 			}
 		}
 	</script>
