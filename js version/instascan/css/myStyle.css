@@ -51,3 +51,40 @@
 }
 
 .close:hover { background: #00d9ff; }
+
+html, body {
+	font-size: 16px;
+}
+
+body {
+	position: relative;
+	background-image: url('../assets/Picture1.png');
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+
+#preview {
+	max-width: 100%;
+	margin-bottom: 0.5rem;
+}
+
+#textbox > ul {
+	margin: 0px;
+}
+
+#howToScan {
+	color: white;
+	margin-bottom: 0.5rem;
+}
+
+.content-block {
+	width: 50%;
+	height: 62%;
+	padding: 0.75rem;
+	border: 1px solid white;
+	position: absolute;
+	top: 1%;
+	left: 3.25%;
+	text-align: center;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "rasppi_qr_reader",
+  "version": "1.0.0",
+  "description": "**About**",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wei-ann-Github/raspPi_QR_reader.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wei-ann-Github/raspPi_QR_reader/issues"
+  },
+  "homepage": "https://github.com/wei-ann-Github/raspPi_QR_reader#readme"
+}

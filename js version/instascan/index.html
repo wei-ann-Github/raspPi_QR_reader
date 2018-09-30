@@ -1,62 +1,95 @@
 <!DOCTYPE html PUBLIC>
 <html>
-  <head>
-    <title>Instascan</title>
-    <link rel="stylesheet" type="text/css" href="css/myStyle.css">
-    <script type="text/javascript" src="js/instascan.min.js"></script>
-    <script type="text/javascript">
+
+<head>
+	<title>Instascan</title>
+	<link rel="stylesheet" type="text/css" href="css/myStyle.css">
+	<script type="text/javascript" src="js/instascan.min.js"></script>
+	<script type="text/javascript">
 		function resize() {
 			var h = document.body.clientHeight;
 			document.getElementById('preview').height = h * 0.5;
-		}	
-    </script>
+		}
+	</script>
 	<style type="text/css">
-		body { margin: 0; }
-		#shade, #modal { display: none; }
-		#shade { position: fixed; z-index: 100; top: 0; left: 0; width: 100%; height: 100%; }
-		#modal { position: fixed; z-index: 101; top: 33%; left: 25%; width: 50%; }
-		#shade { background: silver; opacity: 0.5; filter: alpha(opacity=50); }
+		body {
+			margin: 0;
+		}
+
+		#shade,
+		#modal {
+			display: none;
+		}
+
+		#shade {
+			position: fixed;
+			z-index: 100;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		#modal {
+			position: fixed;
+			z-index: 101;
+			top: 33%;
+			left: 25%;
+			width: 50%;
+		}
+
+		#shade {
+			background: silver;
+			opacity: 0.5;
+			filter: alpha(opacity=50);
+		}
 	</style>
-  </head>
-  <body onload="startScan(); resize();" onresize="resize();">
-	<!-- Header of the page -->
+</head>
+
+<body onload="startScan(); resize();" onresize="resize();">
+
+	<!-- Header of the page
 	<div>
 		<H1 style="align:center;">Banner Here</H1>
-	</div>
-	
-	<!-- Feed from the camera -->
-    <video id="preview" style="align:center;"></video>
-	
-	<!-- Textbox for entering EID -->
-	<div id="howToScan">Scan your QR Code using the webcam or enter your EID below.</div>
-	<div id="textbox">
-		<ul>
-			<li style="display:inline"><input type="text" id="enterSearchString" placeholder="john.doe"></li>
-			<li style="display:inline"><button onclick="askServer('null');" data-target="modal1" class="btn modal-trigger">Enter</button></li>
-		</ul>
-	</div>
-	
-	<!-- The modal -->
-	<a href="#openModal" id="openModalButtonNoSee"></a>  <!--Something to call the modal to show-->
-	<div id="openModal" class="modalDialog">
-		<div>
-			<!-- Reference From: https://www.webdesignerdepot.com/2012/10/creating-a-modal-window-with-html5-and-css3/ -->
-			<a href="#close" title="Close" class="close">X</a>
-			<h2>H&PS Breakout Session</h2>
-			<p id="p1">Please Wait.</p>
-			<p id="p2"></p>
+	</div> -->
+
+	<div class="content-block">
+
+		<!-- Feed from the camera -->
+		<video id="preview"></video>
+
+		<!-- Textbox for entering EID -->
+		<div id="howToScan">Scan your QR Code using the webcam or enter your EID below.</div>
+		<div id="textbox">
+			<ul>
+				<li style="display:inline"><input type="text" id="enterSearchString" placeholder="john.doe"></li>
+				<li style="display:inline"><button onclick="askServer('null');" data-target="modal1" class="btn modal-trigger">Enter</button></li>
+			</ul>
+		</div>
+
+		<!-- The modal -->
+		<a href="#openModal" id="openModalButtonNoSee"></a>
+		<!--Something to call the modal to show-->
+		<div id="openModal" class="modalDialog">
+			<div>
+				<!-- Reference From: https://www.webdesignerdepot.com/2012/10/creating-a-modal-window-with-html5-and-css3/ -->
+				<a href="#close" title="Close" class="close">X</a>
+				<h2>H&PS Breakout Session</h2>
+				<p id="p1">Please Wait.</p>
+				<p id="p2"></p>
+			</div>
 		</div>
 	</div>
-	
+
 	<script type="text/javascript" src="js/utils.js"></script>
 	<script text="text/javascript">
 		document.getElementById("enterSearchString").value = ""
 		var enteredID = document.getElementById("enterSearchString");
-		var modal= document.getElementById('modal');
-		var shade= document.getElementById('shade');
-			
+		var modal = document.getElementById('modal');
+		var shade = document.getElementById('shade');
+
 		enteredID.addEventListener("keydown", function (e) {
-			if (e.keyCode === 13) {  //checks whether the pressed key is "Enter";
+			if (e.keyCode === 13) { //checks whether the pressed key is "Enter";
 				var inputValue = document.getElementById("enterSearchString").value
 				if (inputValue.length() > 0)
 					openModal();
@@ -65,22 +98,22 @@
 			}
 		});
 	</script>
-	
+
 	<script type="text/javascript">
 		var req = new XMLHttpRequest();
-		
+
 		/* Function for modal */
 		function openModal() {
 			document.getElementById('openModalButtonNoSee').click();
 			document.getElementById("p1").innerHTML = "Please Wait ..."
 		}
-		
+
 		/* Function for querying the db */
 		function askServer(id) {
-			if (id == "null")  // This is for getting the id when the Enter button is pressed.
+			if (id == "null") // This is for getting the id when the Enter button is pressed.
 				id = document.getElementById('enterSearchString').value
-				if (id.length > 0)
-					openModal()
+			if (id.length > 0)
+				openModal()
 			if (id.length == 0)
 				return
 			document.getElementById('enterSearchString').value = ""
@@ -90,13 +123,13 @@
 			req.onreadystatechange = handleServerResponse;
 			req.send();
 		}
-		
+
 		function handleServerResponse() {
-			if((req.readyState == 4) && (req.status == 200)) {
+			if ((req.readyState == 4) && (req.status == 200)) {
 				var q_result = req.responseText;
 				result = JSON.parse(q_result)[0]
 				name = JSON.parse(q_result)[1]
-				if (name=="null")	
+				if (name == "null")
 					name = ""
 				else
 					name = " " + name
@@ -113,5 +146,6 @@
 			}
 		}
 	</script>
-  </body>
+</body>
+
 </html>
