@@ -65,12 +65,9 @@ body {
 }
 
 #preview {
-	max-width: 100%;
-	margin-bottom: 0.5rem;;
-}
-
-#textbox > ul {
-	margin: 0px;
+	width: 90%;
+	height: auto;
+	margin-bottom: 0.5rem;
 }
 
 #howToScan {
@@ -89,5 +86,8 @@ body {
 	position: absolute;
 	top: 1%;
 	left: 3.25%;
-	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
